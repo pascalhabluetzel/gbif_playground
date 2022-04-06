@@ -4,6 +4,8 @@ library(maptools)
 library(rgdal)
 library(jsonlite)
 require(geosphere)
+require(curl)
+require(parallel)
 
 data(wrld_simpl) #use wrld_simpl from the maptools package
 
@@ -35,7 +37,7 @@ x <- rep("NA", nrow(notna))
 sampling_location <- structure(c(2.922372, 51.237312), .Dim = 1:2)
 
 start_time <- Sys.time()
-x <- lapply(1:nrow(notna), function(i) {
+x <- sapply(1:nrow(notna), function(i) {
   gbif_occurrence <- structure(c(notna[i, 'decimalLongitude'], notna[i, 'decimalLatitude']), .Dim = 1:2)
   path <- shortestPath(tr, sampling_location, gbif_occurrence, output = "SpatialLines")
   x[i] <- geosphere::lengthLine(path) 
@@ -44,13 +46,32 @@ min(as.numeric(x), na.rm=T)
 end_time <- Sys.time()
 end_time - start_time
 
+
+
+# Some unsuccessful trials to speed up the calculations by parallelization
+
 # For parallelization when running on a linux machine
 start_time <- Sys.time()
 x <- mclapply(1:nrow(notna), function(i) {
   gbif_occurrence <- structure(c(notna[i, 'decimalLongitude'], notna[i, 'decimalLatitude']), .Dim = 1:2)
   path <- shortestPath(tr, sampling_location, gbif_occurrence, output = "SpatialLines")
   x[i] <- geosphere::lengthLine(path) 
-}, mc.cores=4)
+}, mc.cores=6)
+min(as.numeric(x), na.rm=T)
+end_time <- Sys.time()
+end_time - start_time
+
+require(foreach)
+require(doParallel)
+
+registerDoParallel(12)
+
+start_time <- Sys.time()
+foreach (i=1:nrow(notna), .combine=c) %dopar% {
+  gbif_occurrence <- structure(c(notna[i, 'decimalLongitude'], notna[i, 'decimalLatitude']), .Dim = 1:2)
+  path <- shortestPath(tr, sampling_location, gbif_occurrence, output = "SpatialLines")
+  x[i] <- geosphere::lengthLine(path) 
+}
 min(as.numeric(x), na.rm=T)
 end_time <- Sys.time()
 end_time - start_time
