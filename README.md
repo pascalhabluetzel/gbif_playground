@@ -8,7 +8,7 @@ Calculates the shortest over-water distance between a new observation and all ge
 
 Expects a .csv file with species names as provided in the example.
 
-Known issues (working on it):
+Known issues (working on it in the coming days):
 - Script takes quite a while to run to calculate all over-water distances. Should be parallelized.
 - Only the first 1000 entries are considered on GBIF.
 - Code might not work if a species name is misspelled.
