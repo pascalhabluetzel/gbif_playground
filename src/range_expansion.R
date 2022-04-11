@@ -9,7 +9,7 @@ require(curl)
 #require(parallel)
 
 # Set working directory to directory where the R-script is saved
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # needs installation of package "rstudioapi"
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # requires installation of package "rstudioapi"
 
 # Load a map
 data(wrld_simpl) #use wrld_simpl from the maptools package
@@ -32,8 +32,8 @@ tr = geoCorrection(tr, scl=FALSE)
 # Read a species list
 sp_list <- read.csv2(file="species_list.csv", check.names=FALSE, sep=",")
 
-for (j in 1:nrow(sp_list)){
-  
+# Iterate over the rows of the species list
+for (j in 1:nrow(sp_list)){ 
 species <- scan(text = sp_list[j,], what = "")
 url1 <- paste("https://api.gbif.org/v1/species/match?name=", species[1], "%20", species[2], sep="")
 dat <- fromJSON(url1, flatten = TRUE)
