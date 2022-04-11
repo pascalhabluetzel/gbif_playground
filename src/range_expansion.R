@@ -1,3 +1,4 @@
+# Load packages
 library(raster)
 library(gdistance)
 library(maptools)
@@ -5,8 +6,12 @@ library(rgdal)
 library(jsonlite)
 require(geosphere)
 require(curl)
-require(parallel)
+#require(parallel)
 
+# Set working directory to directory where the R-script is saved
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # needs installation of package "rstudioapi"
+
+# Load a map
 data(wrld_simpl) #use wrld_simpl from the maptools package
 
 # Generate a scaffold for the raster file
@@ -24,8 +29,18 @@ worldras[worldras==0] <- 999 # set land to 999
 tr <- transition(worldras, function(x) 1/mean(x), 16)
 tr = geoCorrection(tr, scl=FALSE)
 
+# Read a species list
+sp_list <- read.csv2(file="species_list.csv", check.names=FALSE, sep=",")
+
+for (j in 1:nrow(sp_list)){
+  
+species <- scan(text = sp_list[j,], what = "")
+url1 <- paste("https://api.gbif.org/v1/species/match?name=", species[1], "%20", species[2], sep="")
+dat <- fromJSON(url1, flatten = TRUE)
+
 # Get species distribution data from GBIF
-res = fromJSON("https://api.gbif.org/v1/occurrence/search?speciesKey=5862470&limit=1000", flatten = TRUE)
+url2 <- paste("https://api.gbif.org/v1/occurrence/search?speciesKey=",dat$usageKey,"&limit=1000", sep="")
+res = fromJSON(url2, flatten = TRUE)
 
 # Remove occurrences that don't have coordinate information
 res$results[, c('decimalLongitude', 'decimalLatitude')]
@@ -34,7 +49,7 @@ notna0 <- res$results[na, ]
 notna <- notna0[!duplicated(notna0[, 'decimalLongitude']), ]
   
 x <- rep("NA", nrow(notna))
-sampling_location <- structure(c(2.922372, 51.237312), .Dim = 1:2)
+sampling_location <- structure(c(2.922372, 51.237312), .Dim = 1:2) # enter here the coordinates of the sampling site in wgs84
 
 start_time <- Sys.time()
 x <- sapply(1:nrow(notna), function(i) {
@@ -42,10 +57,11 @@ x <- sapply(1:nrow(notna), function(i) {
   path <- shortestPath(tr, sampling_location, gbif_occurrence, output = "SpatialLines")
   x[i] <- geosphere::lengthLine(path) 
 })
-min(as.numeric(x), na.rm=T)
+d <- min(as.numeric(x), na.rm=T)/1000
 end_time <- Sys.time()
 end_time - start_time
-
+print(paste("The shortest distance is", d, "km for", sp_list[j,]))
+}
 
 
 # Some unsuccessful trials to speed up the calculations by parallelization
