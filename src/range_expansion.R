@@ -6,7 +6,15 @@ library(rgdal)
 library(jsonlite)
 require(geosphere)
 require(curl)
+require(rgbif)
+library(maps)
+library(ggplot2)
 #require(parallel)
+
+# Login data for rgbif
+.user = "pascal_habluetzel"
+.pwd = "Lepta7pi"
+.email = "pascal.hablutzel@vliz.be"
 
 # Set working directory to directory where the R-script is saved
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # requires installation of package "rstudioapi"
@@ -31,6 +39,35 @@ tr = geoCorrection(tr, scl=FALSE)
 
 # Read a species list
 sp_list <- read.csv2(file="species_list.csv", check.names=FALSE, sep=",")
+
+
+
+# Make a polygon around the sampling location
+long <- 2.922372
+lat <- 51.237312
+o <- 10
+polygon <- "POLYGON ((long-o lat+o, long+o lat+o, long+o lat-o, long-o lat-o, long-o lat+o))"
+long-o
+polygon <- paste("Polygon ((",long-o,lat+o,",",long+o,lat+o,",",long+o,lat-o,",",long-o,lat-o,",",long-o,lat+o,"))", sep=" ")
+
+species <- scan(text = sp_list[1,], what = "")
+url1 <- paste("https://api.gbif.org/v1/species/match?name=", species[1], "%20", species[2], sep="")
+dat <- fromJSON(url1, flatten = TRUE)
+gbif_download <- occ_download(type="and", pred("taxonKey", dat$speciesKey), pred_within(polygon), format = "SIMPLE_CSV", user = .user, pwd = .pwd, email = .email)
+Sys.sleep(30)
+d <- occ_download_get(gbif_download, overwrite=T) %>%
+  occ_download_import()
+
+world = map_data("world")
+ggplot(world, aes(long, lat)) +
+  coord_sf(xlim = c(long-o, long+o), ylim = c(lat-o, lat+o)) + 
+  geom_polygon(aes(group = group), fill = "white", 
+               color = "gray40", size = .2) +
+  geom_jitter(data = d,
+              aes(decimalLongitude, decimalLatitude), alpha=0.6, 
+              size = 4, color = "red")
+
+dim(d)[1]
 
 # Iterate over the rows of the species list
 for (j in 1:nrow(sp_list)){ 
