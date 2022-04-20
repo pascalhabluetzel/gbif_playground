@@ -45,12 +45,12 @@ sp_list <- read.csv2(file="species_list.csv", check.names=FALSE, sep=",")
 # Make a polygon around the sampling location
 long <- 2.922372
 lat <- 51.237312
-o <- 10
+o <- 30
 polygon <- "POLYGON ((long-o lat+o, long+o lat+o, long+o lat-o, long-o lat-o, long-o lat+o))"
 long-o
 polygon <- paste("Polygon ((",long-o,lat+o,",",long+o,lat+o,",",long+o,lat-o,",",long-o,lat-o,",",long-o,lat+o,"))", sep=" ")
 
-species <- scan(text = sp_list[2,], what = "")
+species <- scan(text = sp_list[1,], what = "")
 url1 <- paste("https://api.gbif.org/v1/species/match?name=", species[1], "%20", species[2], sep="")
 dat <- fromJSON(url1, flatten = TRUE)
 gbif_download <- occ_download(type="and", pred("taxonKey", dat$speciesKey), pred_within(polygon), format = "SIMPLE_CSV", user = .user, pwd = .pwd, email = .email)
