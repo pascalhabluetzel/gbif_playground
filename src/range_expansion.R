@@ -9,12 +9,13 @@ require(curl)
 require(rgbif)
 library(maps)
 library(ggplot2)
+install.packages("raster")
 #require(parallel)
 
 # Login data for rgbif
-.user = "pascal_habluetzel"
-.pwd = "Lepta7pi"
-.email = "pascal.hablutzel@vliz.be"
+.user = ""
+.pwd = ""
+.email = ""
 
 # Set working directory to directory where the R-script is saved
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # requires installation of package "rstudioapi"
