@@ -91,6 +91,11 @@ species <- scan(text = sp_list[1,], what = "")
 range_expansion(longitude=long, latitude=lat, species=species, window=o, map=TRUE)
 
 
+# Iterate over the rows of the species list
+for (i in 1:nrow(sp_list)){ 
+  species <- scan(text = sp_list[i,], what = "")
+  range_expansion(longitude=long, latitude=lat, species=species, window=o, map=TRUE)
+}
 
 
 
@@ -107,30 +112,6 @@ range_expansion(longitude=long, latitude=lat, species=species, window=o, map=TRU
 
 
 
-polygon <- "POLYGON ((long-o lat+o, long+o lat+o, long+o lat-o, long-o lat-o, long-o lat+o))"
-long-o
-polygon <- paste("Polygon ((",long-o,lat+o,",",long+o,lat+o,",",long+o,lat-o,",",long-o,lat-o,",",long-o,lat+o,"))", sep=" ")
-
-
-url1 <- paste("https://api.gbif.org/v1/species/match?name=", species[1], "%20", species[2], sep="")
-dat <- fromJSON(url1, flatten = TRUE)
-gbif_download <- occ_download(type="and", pred("taxonKey", dat$speciesKey), pred_within(polygon), format = "SIMPLE_CSV", user = .user, pwd = .pwd, email = .email)
-occ_download_wait(gbif_download)
-d <- occ_download_get(gbif_download, overwrite=T) %>%
-  occ_download_import()
-
-world = map_data("world")
-ggplot(world, aes(long, lat)) +
-  coord_sf(xlim = c(long-o, long+o), ylim = c(lat-o, lat+o)) + 
-  geom_polygon(aes(group = group), fill = "white", 
-               color = "gray40", size = .2) +
-  geom_jitter(data = d,
-              aes(decimalLongitude, decimalLatitude), alpha=0.6, 
-              size = 4, color = "red")
-
-dim(d)[1]
-
-species <- scan(text = sp_list[1,], what = "")
 
 
 
