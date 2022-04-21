@@ -87,7 +87,7 @@ start_time <- Sys.time()
 long <- 2.922372
 lat <- 51.237312
 o <- 20
-species <- scan(text = sp_list[1,], what = "")
+species <- scan(text = sp_list[3,], what = "")
 range_expansion(longitude=long, latitude=lat, species=species, window=o, map=TRUE)
 
 
@@ -96,19 +96,6 @@ for (i in 1:nrow(sp_list)){
   species <- scan(text = sp_list[i,], what = "")
   range_expansion(longitude=long, latitude=lat, species=species, window=o, map=TRUE)
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
