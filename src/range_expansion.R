@@ -13,7 +13,7 @@ library(units)
 library(sf)
 library(ggspatial)
 #require(parallel)
-also installing the dependencies ‘proxy’, ‘e1071’, ‘classInt’, ‘s2’, ‘units’
+
 # Login data for rgbif
 .user = "pascal_habluetzel"
 .pwd = ""

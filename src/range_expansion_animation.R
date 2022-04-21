@@ -1,5 +1,13 @@
 # WORK IN PROGRESS
 
+# Login data for rgbif
+.user = "pascal_habluetzel"
+.pwd = ""
+.email = "pascal.hablutzel@vliz.be"
+
+# Set working directory to directory where the R-script is saved
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) # requires installation of package "rstudioapi"
+
 range_expansion_animation <- function(longitude, latitude, species, window){  
   polygon <- paste("Polygon ((",longitude-window/2,latitude+window/2,",",longitude+window/2,latitude+window/2,",",longitude+window/2,latitude-window/2,",",longitude-window/2,latitude-window/2,",",longitude-window/2,latitude+window/2,"))", sep=" ")
   url1 <- paste("https://api.gbif.org/v1/species/match?name=", species[1], "%20", species[2], sep="")
