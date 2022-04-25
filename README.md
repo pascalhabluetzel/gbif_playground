@@ -15,7 +15,7 @@ Calculates the shortest over-water distance between a new observation and all ge
 5. The 'o' parameter defines the polygon within which GBIF occurrences will be considered for analysis. (In the future, I will re-program this parameter to be more dynamic in order to speed up computing time for species with many occurrences.)
 6. If necessary, adjust the name of the .csv file with species names. For now it is called 'species_list.csv'.
 
-Known issues (working on it in the coming days):
+Known issues (working on it in the coming weeks):
 - Script takes quite a while to run to calculate all over-water distances. Should be parallelized.
 - Code might not work if a species name is misspelled.
 
