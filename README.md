@@ -16,6 +16,7 @@ Calculates the shortest over-water distance between a new observation and all ge
 6. If necessary, adjust the name of the .csv file with species names. For now it is called 'species_list.csv'.
 
 Known issues (working on it in the coming weeks):
+- Store all results (paths, distances, maps, etc.) in an object from which they can be re-called after the analysis completed.
 - Script takes quite a while to run to calculate all over-water distances. Should be parallelized.
 - Code might not work if a species name is misspelled.
 
